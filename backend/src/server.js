@@ -42,7 +42,7 @@ app.get('/api/articles/:name', async (req, res) => {
 
     if (article) {
         const upvoteIds = article.upvoteIds || [];
-        article.canUpvote = uid && !upvoteIds.include(uid);
+        article.canUpvote = uid && !upvoteIds.includes(uid);
         res.status(200).json(article);
     } else {
         res.status(400).json({ error: "Article does not exist" })
@@ -66,7 +66,7 @@ app.put('/api/articles/:name/upvote', async (req, res) => {
 
     if (article) {
         const upvoteIds = article.upvoteIds || [];
-        const canUpvote = uid && !upvoteIds.include(uid);
+        const canUpvote = uid && !upvoteIds.includes(uid);
 
         if (canUpvote) {
             await db.collection('articles').updateOne({ name }, {
