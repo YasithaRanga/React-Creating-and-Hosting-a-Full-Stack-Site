@@ -29,6 +29,8 @@ app.use(async (req, res, next) => {
         }
     }
 
+    req.user = req.user || {};
+
     next();
 });
 
