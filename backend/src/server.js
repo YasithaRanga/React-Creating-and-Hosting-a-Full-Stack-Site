@@ -1,8 +1,15 @@
 import fs from 'fs';
+import path from 'path';
 import admin from 'firebase-admin';
 import express from 'express';
 import { db, connectToDb } from './db.js';
 import cors from 'cors';
+import 'dotenv/config';
+
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const credentials = JSON.parse(
     fs.readFileSync('./credentials.json')
@@ -17,6 +24,12 @@ const app = express();
 app.use(express.json());
 
 app.use(cors());
+
+app.use(express.static(path.join(__dirname, '../build')));
+
+app.get(/^(?!\/api).+/, (req, res) => {
+    res.sendFile(path.join(__dirname, '../build/index.html'));
+});
 
 app.use(async (req, res, next) => {
     const { authtoken } = req.headers;
@@ -104,9 +117,11 @@ app.post('/api/articles/:name/comments', async (req, res) => {
     }
 });
 
+const PORT = process.env.PORT || 9000;
+
 connectToDb(() => {
     console.log('Successfully connected to database');
-    app.listen(9000, () => {
-        console.log('Server is running on port: 9000');
+    app.listen(PORT, () => {
+        console.log('Server is running on port: ' + PORT);
     });
 })
